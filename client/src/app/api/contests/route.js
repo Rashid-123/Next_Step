@@ -10,6 +10,7 @@ export async function GET(request) {
   try {
 
     const cachedContests = await redis.get(CACHE_KEY);
+    
     if (cachedContests) {
       console.log("Data served from cache");
       return NextResponse.json({ contests: cachedContests, cached: true });

@@ -16,44 +16,37 @@ function getSecondsUntilNextUTCMidnight() {
 export async function POST(req) {
   console.log("Request received for POD");
 
-  const todayUTC = new Date().toISOString().split("T")[0]; // "YYYY-MM-DD"
-  const cacheKey = `leetcodePOD:${todayUTC}`;
+  const todayUTC = new Date().toISOString().split("T")[0]; 
+  // const cacheKey = `leetcodePOD:${todayUTC}`;
 
   try {
-    const cached = await redis.get(cacheKey); // This is the value fetched from Redis
+    // const cached = await redis.get(cacheKey); 
 
-    if (cached) {
-      console.log("Serving POD from cache");
-      let dataToReturn;
+    // if (cached) {
+    //   console.log("Serving POD from cache");
+    //   let dataToReturn;
 
-      // Check if 'cached' is already a JavaScript object
-      // This is the most likely scenario causing your error.
-      if (typeof cached === 'object' && cached !== null) {
-        dataToReturn = cached; // Use the object directly
-      } else if (typeof cached === 'string') {
-        // If it's a string, attempt to parse it.
-        // This handles cases where the Redis client *doesn't* auto-parse.
-        try {
-          dataToReturn = JSON.parse(cached);
-        } catch (parseError) {
-          console.error("Failed to parse cached string as JSON:", parseError);
-          // If parsing fails, treat it as if cache is invalid and proceed to fetch fresh data.
-          dataToReturn = null;
-        }
-      } else {
-        // Handle unexpected types, treat as no valid cache
-        console.warn("Unexpected type for cached data:", typeof cached);
-        dataToReturn = null;
-      }
+    
+    //   if (typeof cached === 'object' && cached !== null) {
+    //     dataToReturn = cached; // Use the object directly
+    //   } else if (typeof cached === 'string') {
+    //     try {
+    //       dataToReturn = JSON.parse(cached);
+    //     } catch (parseError) {
+    //       console.error("Failed to parse cached string as JSON:", parseError);
+    //       dataToReturn = null;
+    //     }
+    //   } else {
+    
+    //     console.warn("Unexpected type for cached data:", typeof cached);
+    //     dataToReturn = null;
+    //   }
 
-      if (dataToReturn) {
-        // If we have valid data (either direct object or successfully parsed string)
-        return NextResponse.json(dataToReturn, { status: 200 });
-      }
-    }
+    //   if (dataToReturn) {
+    //     return NextResponse.json(dataToReturn, { status: 200 });
+    //   }
+    // }
 
-    // If no valid cache was found (or parsing failed), proceed to fetch fresh data
-    // GraphQL query for POD
     const query = {
       query: `
         query questionOfToday {
@@ -90,17 +83,14 @@ export async function POST(req) {
       body: JSON.stringify(query),
     });
 
-    const data = await res.json(); // 'data' is now a JavaScript object from LeetCode API
+    const data = await res.json(); 
 
-    // Stringify the JavaScript object to store it as a string in Redis
-    const dataToCache = JSON.stringify(data);
+   
+    // const dataToCache = JSON.stringify(data);
 
-    // Set in Redis with TTL until next UTC midnight
-    const ttl = getSecondsUntilNextUTCMidnight();
-    await redis.set(cacheKey, dataToCache, { ex: ttl });
+    // const ttl = getSecondsUntilNextUTCMidnight();
+    // await redis.set(cacheKey, dataToCache, { ex: ttl });
 
-    // Return the original JavaScript object using NextResponse.json()
-    // It will stringify it and send with Content-Type: application/json
     return NextResponse.json(data, { status: 200 });
 
   } catch (error) {

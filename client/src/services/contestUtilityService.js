@@ -62,19 +62,19 @@ export function sortContestsByStatus(contests) {
 
   // Sort contests by status priority and then by start time
   return [...contests].sort((a, b) => {
-    // First, sort by status priority
+    
     if (statusPriority[a.status] !== statusPriority[b.status]) {
       return statusPriority[a.status] - statusPriority[b.status];
     }
     
-    // If same status, sort by start time (upcoming and ongoing: earlier first, past: latest first)
+   
     const aTime = new Date(a.startime).getTime();
     const bTime = new Date(b.startime).getTime();
     
     if (a.status === 'past') {
-      return bTime - aTime; // Latest first for past contests
+      return bTime - aTime; 
     } else {
-      return aTime - bTime; // Earlier first for upcoming and ongoing
+      return aTime - bTime; 
     }
   });
 }
