@@ -1,4 +1,3 @@
-// components/RecommendationListSkeleton.jsx
 export default function RecommendationListSkeleton() {
     const skeletons = Array(6).fill(null); // Number of skeleton cards to render
 

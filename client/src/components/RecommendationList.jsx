@@ -1,4 +1,3 @@
-// components/RecommendationList.jsx
 import RecommendationCard from "./RecommendationCard";
 
 export default function RecommendationList({ recommendations }) {

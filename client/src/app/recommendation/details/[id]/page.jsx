@@ -85,7 +85,7 @@ export default function RecommendationDetails() {
 
                 {/* Problems List Skeleton (e.g., 3 items) */}
                 <div className="space-y-3">
-                    {[...Array(3)].map((_, index) => ( // Render 3 skeleton items
+                    {[...Array(5)].map((_, index) => ( 
                         <div key={index} className="bg-gray-100 border border-gray-200 rounded-lg p-4 shadow-xs">
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
                                 <div className="flex-1 space-y-1">

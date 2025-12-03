@@ -1,6 +1,4 @@
 
-
-// components/CountdownTimer.js
 import { useState, useEffect } from 'react';
 import { getTimeRemaining } from '../services/contestUtilityService';
 
