@@ -12,6 +12,8 @@
 - All LeetCode problems (title, description, difficulty) are preprocessed and converted into vector embeddings using OpenAI embedding model.
 - These embeddings are stored in Pinecone for fast semantic search.
 
+  ![Problems Embedding](assets/problem_embedding.png)
+
 ### *User Progress Ingestion*
 - When a user logs in, the system fetches their latest solved problems from their LeetCode profile.
 - The most recent **20 solved problems** are selected for generating personalized recommendations.
@@ -19,6 +21,8 @@
 ### *Semantic Recommendation Engine*
 - Embeddings of the user’s last 20 problems are used to query Pinecone.
 - The system retrieves the **top semantically similar problems** as recommended next challenges.
+
+  ![Problem Recommendation](assets/problem_recommendation.png)
 
 ### *Hint & Insight Generation (LLM-Powered)*
 - For each recommended problem, the matched problem pairs are passed to the OpenAI LLM .

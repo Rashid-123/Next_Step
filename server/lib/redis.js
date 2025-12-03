@@ -1,4 +1,3 @@
-// src/lib/redis.js (or utils/redis.js)
 import { Redis } from '@upstash/redis';
 import dotenv from "dotenv"
 dotenv.config();
@@ -15,4 +14,3 @@ export const redis = new Redis({
   token: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
 
-// You can also export a different client if you need specific configurations for different use cases.

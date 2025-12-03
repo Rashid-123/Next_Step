@@ -133,7 +133,6 @@ const validateLeetCodeUsername = async (username) => {
 
 // Helper function for basic username format validation
 const isValidUsernameFormat = (username) => {
-  // LeetCode usernames: 1-15 characters, alphanumeric, underscore, hyphen
   const usernameRegex = /^[a-zA-Z0-9_-]{1,15}$/;
   return usernameRegex.test(username);
 };
