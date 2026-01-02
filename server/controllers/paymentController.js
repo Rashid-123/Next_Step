@@ -22,28 +22,7 @@ export const create_order = async ( req , res) => {
 }
 
 
-// export const verify_payment = async ( req , res) => {
-//    const { razorpay_order_id, razorpay_payment_id, razorpay_signature , creditsPurchased } = req.body;
-//      const userId = req.user.id;
 
-  // const body = razorpay_order_id + "|" + razorpay_payment_id;
-  // const expectedSignature = crypto
-  //   .createHmac("sha256", `${process.env.RAZORPAY_KEY_SECRET}`)
-  //   .update(body.toString())
-  //   .digest("hex");
-
-//   if (expectedSignature === razorpay_signature) {
-//     // 🔓 Verified! Now give credits to user
-//     console.log("Payment verified successfully");
-
-    
-
-
-//     res.send({ success: true });
-//   } else {
-//     res.status(400).send({ success: false, message: "Invalid signature" });
-//   }
-// }
 
 
 

@@ -10,7 +10,7 @@ import { redis } from "../lib/redis.js";
 const privateKey = process.env.FIREBASE_PRIVATE_KEY;
 
 if (!privateKey) {
-  console.error("🔥 FIREBASE_PRIVATE_KEY is not defined in environment variables");
+  console.error(" FIREBASE_PRIVATE_KEY is not defined in environment variables");
   throw new Error("FIREBASE_PRIVATE_KEY is missing");
 }
 
@@ -37,10 +37,9 @@ const handleAuth = async (req, res) => {
 
     // Verify the Firebase ID token (ALWAYS REQUIRED FOR SECURITY)
     const decodedToken = await admin.auth().verifyIdToken(idToken);
-    const { uid, email, name, picture } = decodedToken; // 'name' and 'picture' might be undefined for email/password auth
+    const { uid, email, name, picture } = decodedToken; 
 
-    const cacheKey = `user:${uid}`; // Unique cache key for the user
-
+    const cacheKey = `user:${uid}`; 
     let user;
 
     // --- Try to get user from cache ---
