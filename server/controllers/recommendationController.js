@@ -7,14 +7,12 @@ export const createRecommendation = async (req, res) => {
 
     console.log('Controller input:', { problemNumbers, numRecommendations, Hard, name });
 
-    // Validate and convert input
     if (!Array.isArray(problemNumbers) || problemNumbers.length !== 20) {
         return res.status(400).json({
             error: 'Please provide exactly 20 problem numbers as an array'
         });
     }
 
-    // Convert problem numbers to integers if they're strings
     const convertedProblemNumbers = problemNumbers.map(num => {
         const converted = typeof num === 'string' ? parseInt(num, 10) : num;
         if (isNaN(converted)) {
@@ -42,7 +40,7 @@ export const createRecommendation = async (req, res) => {
             includeHard
         });
 
-        // Add timeout to catch hanging requests
+        // ----------- timeout to catch hanging requests --------
         const timeoutPromise = new Promise((_, reject) =>
             setTimeout(() => reject(new Error('Request timeout after 60 seconds')), 60000)
         );
@@ -79,7 +77,7 @@ export const createRecommendation = async (req, res) => {
             message: problem.message
         }));
 
-        // Create a new recommendation document
+        // ----------  new recommendation document ------
         const recommendationDoc = new Recommendation({
             recommendations: formattedRecommendations,
             name: name,
@@ -88,11 +86,11 @@ export const createRecommendation = async (req, res) => {
 
         console.log("Creating recommendation document:", recommendationDoc);
 
-        // Save the recommendation document
+       
         const savedRecommendation = await recommendationDoc.save();
         console.log("Saved recommendation:", savedRecommendation._id);
 
-        // Update the user's recommendation history
+      
         const updatedUser = await User.findByIdAndUpdate(
             userId,
             {
@@ -114,7 +112,7 @@ export const createRecommendation = async (req, res) => {
     } catch (error) {
         console.error("Error creating recommendation:", error);
 
-        // More specific error handling
+        
         if (error.message.includes('timeout')) {
             return res.status(408).json({
                 error: 'Request timeout - recommendation service took too long'
@@ -140,7 +138,7 @@ export const createRecommendation = async (req, res) => {
     }
 };
 
-//----------- Get all recommendations for a user
+//----------- Get all recommendations for a user ------------------
 
 export const getAllRecommendations = async (req, res) => {
     // console.log("Get all recommendations called");
@@ -156,7 +154,7 @@ export const getAllRecommendations = async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Transform the data
+       
         const formatted = user.recommendationHistory.map(rec => ({
             id: rec._id,
             count: rec.recommendations.length,
@@ -174,7 +172,7 @@ export const getAllRecommendations = async (req, res) => {
     }
 };
 
-//------------- Get a specific recommendation by ID
+//------------- Get a specific recommendation by ID -----------
 export const getRecommendation = async (req, res) => {
     const userId = req.user.id;
     const { id } = req.params;

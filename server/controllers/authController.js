@@ -4,8 +4,8 @@ dotenv.config();
 import admin from 'firebase-admin';
 
 import mongoose from 'mongoose';
-import User from "../models/User.js" 
-import { redis } from "../lib/redis.js"; 
+import User from "../models/User.js"
+import { redis } from "../lib/redis.js";
 
 const privateKey = process.env.FIREBASE_PRIVATE_KEY;
 
@@ -20,12 +20,12 @@ if (!admin.apps.length) {
     credential: admin.credential.cert({
       projectId: process.env.FIREBASE_PROJECT_ID,
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'), // Ensure newlines are correctly interpreted
+      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
     }),
   });
 }
 
-const USER_CACHE_TTL_SECONDS = 60 * 15; // Cache user for 15 minutes
+const USER_CACHE_TTL_SECONDS = 60 * 15;
 
 const handleAuth = async (req, res) => {
   try {
@@ -37,9 +37,9 @@ const handleAuth = async (req, res) => {
 
     // Verify the Firebase ID token (ALWAYS REQUIRED FOR SECURITY)
     const decodedToken = await admin.auth().verifyIdToken(idToken);
-    const { uid, email, name, picture } = decodedToken; 
+    const { uid, email, name, picture } = decodedToken;
 
-    const cacheKey = `user:${uid}`; 
+    const cacheKey = `user:${uid}`;
     let user;
 
     // --- Try to get user from cache ---
@@ -55,36 +55,36 @@ const handleAuth = async (req, res) => {
     // }
 
 
-    if (!user) { 
-      console.log(`User ${uid} not found in cache, fetching from DB.`);
-    
+    if (!user) {
+      // console.log(`User ${uid} not found in cache, fetching from DB.`);
+
       user = await User.findOne({ firebaseUID: uid });
 
       if (!user) {
-       
+
         let displayNameToUse = name;
 
         if (!displayNameToUse && email) {
-         
+
           const emailPrefix = email.split('@')[0];
           displayNameToUse = emailPrefix
-            .replace(/[^a-zA-Z0-9]/g, ' ') 
+            .replace(/[^a-zA-Z0-9]/g, ' ')
             .split(' ')
             .map(word => word.charAt(0).toUpperCase() + word.slice(1))
             .join(' ')
-            .trim(); 
+            .trim();
 
-       
+
           if (!displayNameToUse || /^\d+$/.test(displayNameToUse)) {
-              displayNameToUse = 'New User';
+            displayNameToUse = 'New User';
           }
         }
-    
+
         if (!displayNameToUse) {
-            displayNameToUse = 'New User';
+          displayNameToUse = 'New User';
         }
 
-       
+
         const photoURLToUse = picture || '';
 
 
@@ -94,17 +94,16 @@ const handleAuth = async (req, res) => {
           email,
           displayName: displayNameToUse,
           photoURL: photoURLToUse,
-          role: 'user', // Default role
+          role: 'user',
           bookmarked: [],
-          credits: 50, // Default credits
-          // leetcode: '', // Initialize other fields if necessary
+          credits: 50
         });
         await user.save();
       }
 
       // // --- Cache the user object after fetching/creating ---
       // try {
-   
+
       //   await redis.set(cacheKey, JSON.stringify(user.toObject()), { ex: USER_CACHE_TTL_SECONDS });
       //   console.log(`User ${uid} cached successfully.`);
       // } catch (cacheError) {
@@ -116,7 +115,56 @@ const handleAuth = async (req, res) => {
     // Respond with the user data (ensure it's a plain object)
     res.json({
       user: {
-        id: user._id, // MongoDB _id
+        id: user._id,
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        role: user.role,
+        bookmarked: user.bookmarked,
+        leetcode: user.leetcode,
+        credits: user.credits
+      }
+    });
+
+  } catch (error) {
+    console.error('Authentication error:', error);
+    // More specific error handling for Firebase token verification issues
+    if (error.code === 'auth/id-token-expired') {
+      res.status(401).json({ error: 'Authentication failed: ID token expired. Please log in again.' });
+    } else if (error.code === 'auth/argument-error' || error.code === 'auth/invalid-id-token') {
+      res.status(401).json({ error: 'Authentication failed: Invalid ID token.' });
+    } else {
+      res.status(500).json({ error: 'Authentication failed' });
+    }
+  }
+};
+
+// Get user details 
+
+const getUser = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      })
+    }
+
+    const user = await User.findById(userId).lean();
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        id: user._id,
         email: user.email,
         displayName: user.displayName,
         photoURL: user.photoURL,
@@ -126,18 +174,13 @@ const handleAuth = async (req, res) => {
         credits: user.credits,
       }
     });
-
   } catch (error) {
-    console.error('Authentication error:', error);
-    // More specific error handling for Firebase token verification issues
-    if (error.code === 'auth/id-token-expired') {
-        res.status(401).json({ error: 'Authentication failed: ID token expired. Please log in again.' });
-    } else if (error.code === 'auth/argument-error' || error.code === 'auth/invalid-id-token') {
-        res.status(401).json({ error: 'Authentication failed: Invalid ID token.' });
-    } else {
-        res.status(500).json({ error: 'Authentication failed' });
-    }
+    console.error("getUser error", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    })
   }
-};
+}
 
-export { handleAuth };
+export { handleAuth, getUser };

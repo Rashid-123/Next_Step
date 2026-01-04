@@ -10,7 +10,7 @@ import bookmarkRoutes from "./routes/bookmarkRoutes.js";
 import integateRoutes from "./routes/integrateRoutes.js";
 import recommendRoutes from "./routes/recommendRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js"
-
+import { razorpayWebhook } from "./webhook/razorpayWebhook.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -25,11 +25,18 @@ const FRONTEND_URLS = [
 // Middleware
 app.use(
   cors({
-    origin: FRONTEND_URLS, // Allow both URLs
-    credentials: true, // Enable cookies & authentication headers
+    origin: FRONTEND_URLS, 
+    credentials: true, 
   })
 );
 
+// --------- razorpay webhook before json parsing ----------
+app.post(
+  "/api/payment/webhook",
+  express.raw({ type: "application/json" }),
+  razorpayWebhook
+);
+//-----------------------------------------------------------
 
 app.use(express.json());
 

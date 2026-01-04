@@ -28,7 +28,7 @@ export const toggleBookmark = async (req, res) => {
 
 export const getallBookmarks = async (req, res) => {
     try {
-        const userId = req.user.id; // Get user ID from the request object  
+        const userId = req.user.id; 
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ error: "User not found" });

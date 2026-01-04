@@ -37,7 +37,7 @@ import { SiLighthouse } from "react-icons/si";
 
 export default function Navbar() {
     const { user, token, logout, loading } = useAuth();
-    console.log("token in navbar", token)
+    // console.log("token in navbar", token)
     const [isOpen, setIsOpen] = useState(false); // State for mobile menu
     const pathname = usePathname(); // Get current path
     const router = useRouter(); // For programmatic navigation
@@ -61,16 +61,16 @@ export default function Navbar() {
         try {
             logout();
             setIsOpen(false);
-            router.push("/"); // Redirect to home page after logout
+            router.push("/"); 
         } catch (error) {
             console.error("Error logging out:", error);
         }
     }
 
-    // Function to handle navigation from mobile menu
+  
     const handleMobileNavigation = (path) => {
-        setIsOpen(false); // Close the sheet
-        router.push(path); // Navigate to the path
+        setIsOpen(false); 
+        router.push(path); 
     };
 
     if (loading) {
@@ -92,16 +92,16 @@ export default function Navbar() {
         </div>
         );
     }
-    // borderBottom: "1px solid #f8f8fa"
+    
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 p-5 bg-white border border-b-gray-200  " style={{ color: "#141413", }}>
             <div className="container mx-auto flex items-center justify-between">
                 {/* Logo */}
-                {/* <div className="text-xl font-bold tracking-wide" style={{ fontFamily: 'orbitron ' }}>NextStep</div> */}
+               
                 <div className="text-xl font-bold text-gray-900 tracking-wide" style={{ fontFamily: 'orbitron' }}>
                     Next<span className="text-blue-600">Step</span>
                 </div>
-                {/* Center Navigation Links - Only visible on desktop */}
+               
                 <div className="hidden lg:flex items-center justify-center space-x-1 flex-1">
                     <div className="flex items-center justify-center space-x-1">
                         <Button variant="ghost" asChild className={`text-sm font-medium transition-colors hover:bg-gray-100 ${isActive("/") ? "bg-slate-100  " : ""}`}>

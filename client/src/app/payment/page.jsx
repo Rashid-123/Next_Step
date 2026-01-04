@@ -44,36 +44,69 @@ export default function Payment() {
                 name: "NextStep",
 
                 handler: async function (response) {
-                    try {
-                        const verifyRes = await axios.post(
-                            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/payment/verify`,
-                            {
-                                razorpay_order_id: response.razorpay_order_id,
-                                razorpay_payment_id: response.razorpay_payment_id,
-                                razorpay_signature: response.razorpay_signature,
-                                creditsPurchased: credits,
-                            },
-                            {
+
+                    alert("Payment successfull! Credits will be added shortly.")
+
+                    // -------- fetch updated credits ---------
+                    setTimeout(async () => {
+                        try {
+                            const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/getUser`, {
                                 headers: {
                                     Authorization: `Bearer ${token}`,
                                 },
+                            });
+                            console.log("after payment credit update", res.data)
+                            if (res.data?.success) {
+                                const updatedCredits = res.data.data.credits;
+                                setUser((prevUser) => {
+                                    if (!prevUser) return prevUser;
+
+                                    return {
+                                        ...prevUser,
+                                        credits: updatedCredits,
+                                    };
+                                });
                             }
-                        );
-
-                        console.log("Payment verification response:", verifyRes.data);
-
-                        if (verifyRes.data.success) {
-                            setUser(prevUser => ({
-                                ...prevUser,
-                                credits: verifyRes.data.credits
-                            }));
-
-                            alert(`Payment successful! ${credits} credits added. Total credits: ${verifyRes.data.credits}`);
+                        } catch (error) {
+                            if (axios.isAxiosError(error)) {
+                                console.error("Get user failed:", error.response?.data?.message);
+                            } else {
+                                console.error("Unexpected error:", error);
+                            }
                         }
-                    } catch (error) {
-                        console.error("Error verifying payment:", error);
-                        alert("Payment verification failed. Please contact support.");
-                    }
+                    }, 2000)
+
+
+                    // try {
+                    //     const verifyRes = await axios.post(
+                    //         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/payment/verify`,
+                    //         {
+                    //             razorpay_order_id: response.razorpay_order_id,
+                    //             razorpay_payment_id: response.razorpay_payment_id,
+                    //             razorpay_signature: response.razorpay_signature,
+                    //             creditsPurchased: credits,
+                    //         },
+                    //         {
+                    //             headers: {
+                    //                 Authorization: `Bearer ${token}`,
+                    //             },
+                    //         }
+                    //     );
+
+                    //     console.log("Payment verification response:", verifyRes.data);
+
+                    //     if (verifyRes.data.success) {
+                    //         setUser(prevUser => ({
+                    //             ...prevUser,
+                    //             credits: verifyRes.data.credits
+                    //         }));
+
+                    //         alert(`Payment successful! ${credits} credits added. Total credits: ${verifyRes.data.credits}`);
+                    //     }
+                    // } catch (error) {
+                    //     console.error("Error verifying payment:", error);
+                    //     alert("Payment verification failed. Please contact support.");
+                    // }
                 },
 
                 prefill: {

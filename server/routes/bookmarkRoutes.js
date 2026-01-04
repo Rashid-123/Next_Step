@@ -7,7 +7,7 @@ import {
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
-console.log("Bookmark routes loaded");
+
 router.post("/", protect, toggleBookmark);
 router.get("/", protect, getallBookmarks); 
 

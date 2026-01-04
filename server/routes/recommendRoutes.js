@@ -12,7 +12,7 @@ import {
 } from "../controllers/recommendationController.js";
 
 const router = express.Router();
-console.log("Recommendation routes loaded");
+
 router.post("/", protect, createRecommendation);
 router.get("/all", protect, getAllRecommendations);
 router.get("/:id", protect, getRecommendation);

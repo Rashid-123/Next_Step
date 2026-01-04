@@ -1,6 +1,4 @@
 
-
-// models/User.js
 import mongoose from "mongoose";
 const UserSchema = new mongoose.Schema(
   {
@@ -30,9 +28,14 @@ const UserSchema = new mongoose.Schema(
     },
     leetcode: String,
     github: String,
-    credits:Number,
+    credits:{type: Number , default: 0},
 
-    // Store recommendation event references
+   // Payment 
+   processedPayments: {
+    type:[String],  // razorpay payment_id
+    default: []
+   },
+
     recommendationHistory: [
       {
         type: mongoose.Schema.Types.ObjectId,
