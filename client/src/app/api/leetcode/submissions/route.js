@@ -21,7 +21,7 @@ export async function POST ( req ){
 
        const data = await fetchRecentWithDescriptions(username, count); 
      
-      // console.log("Fetched data:", data); 
+     
         return new Response(JSON.stringify(data), {
             status:200,
             headers:{'Content-Type':'application/json'},
@@ -39,7 +39,7 @@ export async function POST ( req ){
 
 async function fetchRecentWithDescriptions(username, count = 5) {
     const submissions = await fetchRecentSubmissions(username, count);
-  //  console.log("Fetched submissions:", submissions); // Log the fetched submissions for debugging
+ 
     const detailedResults = await Promise.all(
       submissions.map(async (submission) => {
         const details = await fetchProblemDescription(submission.titleSlug);
@@ -62,28 +62,7 @@ async function fetchRecentWithDescriptions(username, count = 5) {
 
 
  async function fetchProblemDescription(titleSlug) {
-    // const query = {
-    //   query: `
-    //     query questionData($titleSlug: String!) {
-    //       question(titleSlug: $titleSlug) {
-    //         questionFrontendId
-    //         title
-    //         content
-    //         difficulty
-    //         likes
-    //         dislikes
-    //         topicTags {
-    //           name
-    //           slug
-    //         }
-    //       }
-    //     }
-    //   `,
-    //   variables: {
-    //     titleSlug,
-    //   },
-    // };
-  
+    
     const query = {
       query: `
         query questionData($titleSlug: String!) {

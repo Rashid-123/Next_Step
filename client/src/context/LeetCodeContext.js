@@ -43,11 +43,11 @@ export const LeetCodeProvider = ({ children }) => {
 
       const result = await res.json();
       
-      // Process the calendar data
+      
       const parsedData = [];
       let calendarData = result;
 
-      // If the API didn't parse the JSON string, check if we need to
+     
       if (result.submissionCalendar && typeof result.submissionCalendar === 'string') {
         try {
           calendarData = JSON.parse(result.submissionCalendar);
@@ -56,19 +56,19 @@ export const LeetCodeProvider = ({ children }) => {
         }
       }
 
-      // Process the data
+    
       for (const [timestamp, count] of Object.entries(calendarData)) {
         try {
-          // Parse timestamp as number
+         
           const unixTimestamp = Number(timestamp);
 
-          // Skip if not a valid number
+       
           if (isNaN(unixTimestamp)) continue;
 
-          // Create a date from the timestamp
+       
           const date = new Date(unixTimestamp * 1000);
 
-          // Format the date and add to parsed data
+        
           parsedData.push({
             date: date.toISOString().split('T')[0], // YYYY-MM-DD format
             count: Number(count) || 0,

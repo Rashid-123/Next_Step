@@ -18,14 +18,18 @@ export default function Payment() {
         });
     };
 
-    const handleBuyCredits = async (amount, credits) => {
-        const res = await loadRazorpayScript();
-        if (!res) {
-            alert("Razorpay SDK failed to load. Check your internet.");
+   
+
+    const handleBuyCredits = async (amount) => {
+        const loaded = await loadRazorpayScript();
+
+        if (!loaded) {
+            alert("Razorpay SDK failed to load. Please check your internet.");
             return;
         }
 
         try {
+            //  Create order
             const { data } = await axios.post(
                 `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/payment/create-order`,
                 { amount },
@@ -38,93 +42,93 @@ export default function Payment() {
 
             const options = {
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-                amount: data.amount,
+                amount: data.amount, // paise
                 currency: data.currency,
                 order_id: data.id,
                 name: "NextStep",
 
-                handler: async function (response) {
+                handler: async function () {
+                    alert("Payment successful. Updating credits...");
 
-                    alert("Payment successfull! Credits will be added shortly.")
+                    // Poll backend for updated credits
+                    const initialCredits = user?.credits || 0;
+                    let attempts = 0;
+                    const MAX_ATTEMPTS = 10;
 
-                    // -------- fetch updated credits ---------
-                    setTimeout(async () => {
+                    const interval = setInterval(async () => {
+                        attempts++;
+
                         try {
-                            const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/getUser`, {
-                                headers: {
-                                    Authorization: `Bearer ${token}`,
-                                },
-                            });
-                            console.log("after payment credit update", res.data)
+                            const res = await axios.get(
+                                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/getUser`,
+                                {
+                                    headers: {
+                                        Authorization: `Bearer ${token}`,
+                                    },
+                                }
+                            );
+
                             if (res.data?.success) {
                                 const updatedCredits = res.data.data.credits;
-                                setUser((prevUser) => {
-                                    if (!prevUser) return prevUser;
 
-                                    return {
-                                        ...prevUser,
+                                if (updatedCredits > initialCredits) {
+                                    setUser((prev) => ({
+                                        ...prev,
                                         credits: updatedCredits,
-                                    };
-                                });
+                                    }));
+
+                                    clearInterval(interval);
+                                    alert("Credits added successfully 🎉");
+                                }
                             }
-                        } catch (error) {
-                            if (axios.isAxiosError(error)) {
-                                console.error("Get user failed:", error.response?.data?.message);
-                            } else {
-                                console.error("Unexpected error:", error);
+
+                            if (attempts >= MAX_ATTEMPTS) {
+                                clearInterval(interval);
+                                alert(
+                                    "Payment received. Credits will be added shortly if not visible yet."
+                                );
                             }
+                        } catch (err) {
+                            console.error("Credit polling failed:", err);
                         }
-                    }, 2000)
-
-
-                    // try {
-                    //     const verifyRes = await axios.post(
-                    //         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/payment/verify`,
-                    //         {
-                    //             razorpay_order_id: response.razorpay_order_id,
-                    //             razorpay_payment_id: response.razorpay_payment_id,
-                    //             razorpay_signature: response.razorpay_signature,
-                    //             creditsPurchased: credits,
-                    //         },
-                    //         {
-                    //             headers: {
-                    //                 Authorization: `Bearer ${token}`,
-                    //             },
-                    //         }
-                    //     );
-
-                    //     console.log("Payment verification response:", verifyRes.data);
-
-                    //     if (verifyRes.data.success) {
-                    //         setUser(prevUser => ({
-                    //             ...prevUser,
-                    //             credits: verifyRes.data.credits
-                    //         }));
-
-                    //         alert(`Payment successful! ${credits} credits added. Total credits: ${verifyRes.data.credits}`);
-                    //     }
-                    // } catch (error) {
-                    //     console.error("Error verifying payment:", error);
-                    //     alert("Payment verification failed. Please contact support.");
-                    // }
+                    }, 2000);
                 },
 
                 prefill: {
                     name: user?.name || "Test User",
                     email: user?.email || "test@example.com",
                 },
+
                 theme: {
                     color: "#1f2937",
+                },
+
+                modal: {
+                    ondismiss: function () {
+                        alert("Payment popup closed. No money was deducted.");
+                    },
                 },
             };
 
             const rzp = new window.Razorpay(options);
+
+            //  Payment failure handler
+            rzp.on("payment.failed", function (response) {
+                console.error("Razorpay payment failed:", response.error);
+
+                alert(
+                    response.error.description ||
+                    "Payment failed. Please try again."
+                );
+            });
+
             rzp.open();
         } catch (error) {
-            console.error("Payment failed:", error);
-            alert("Something went wrong during payment. Please try again.");
+            console.error("Order creation failed:", error);
+            alert("Unable to initiate payment. Please try again later.");
         }
     };
+
 
     return (
         <div className="min-h-screen bg-gray-50 py-16">

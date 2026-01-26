@@ -13,14 +13,14 @@ import Nolinked from './Nolinked';
 const SkeletonLoader = () => {
     return (
         <div className="animate-pulse">
-            {/* Calendar skeleton */}
+           
             <div className="grid grid-cols-53 gap-1 mb-4">
                 {Array.from({ length: 371 }).map((_, i) => (
                     <div key={i} className="w-2.5 h-2.5 bg-green-200 rounded-sm"></div>
                 ))}
             </div>
 
-            {/* Legend skeleton */}
+           
             <div className="flex items-center gap-2 text-sm">
                 <div className="w-8 h-4 bg-gray-200 rounded"></div>
                 {Array.from({ length: 5 }).map((_, i) => (
@@ -43,7 +43,7 @@ export default function Heatmap({ username }) {
         }
     }, [username, fetchLeetCodeData]);
 
-    // Calculate date range based on available data or default to current year
+ 
     const today = new Date();
     const defaultStartDate = format(subMonths(today, 12), 'yyyy-MM-dd');
     const defaultEndDate = format(today, 'yyyy-MM-dd');
@@ -79,7 +79,7 @@ export default function Heatmap({ username }) {
                 Your coding progress on LeetCode
             </span>
 
-            {/* Handle null/undefined username */}
+           
             {!username ? (
                 <div className="min-h-[350px] md:min-h-[100px] flex items-center justify-center">
                     <Nolinked message={"Please add you leetcode userName to show the heatmap"} />

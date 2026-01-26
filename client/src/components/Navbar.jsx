@@ -37,11 +37,12 @@ import { SiLighthouse } from "react-icons/si";
 
 export default function Navbar() {
     const { user, token, logout, loading } = useAuth();
-    // console.log("token in navbar", token)
-    const [isOpen, setIsOpen] = useState(false); // State for mobile menu
-    const pathname = usePathname(); // Get current path
-    const router = useRouter(); // For programmatic navigation
+  
+    const [isOpen, setIsOpen] = useState(false);
+    const pathname = usePathname(); 
+    const router = useRouter(); 
 
+     console.log(user)
     // Function to get user initials for avatar
     const getUserInitials = () => {
         if (!user) return "";
@@ -76,10 +77,11 @@ export default function Navbar() {
     if (loading) {
         return (<div className="fixed top-0 left-0 right-0 z-50 p-4 border-b" style={{ backgroundColor: "#f0eee6", color: "#141413" }}>
             <div className="flex items-center justify-between animate-pulse">
-                {/* Logo */}
+              
+
                 <div className="h-6 w-24 bg-gray-300 rounded"></div>
 
-                {/* Navigation Buttons Skeleton */}
+            
                 <div className="hidden lg:flex items-center space-x-4">
                     {[...Array(6)].map((_, i) => (
                         <div key={i} className="h-8 w-20 bg-gray-300 rounded"></div>
@@ -96,7 +98,7 @@ export default function Navbar() {
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 p-5 bg-white border border-b-gray-200  " style={{ color: "#141413", }}>
             <div className="container mx-auto flex items-center justify-between">
-                {/* Logo */}
+                {/* logo */}
                
                 <div className="text-xl font-bold text-gray-900 tracking-wide" style={{ fontFamily: 'orbitron' }}>
                     Next<span className="text-blue-600">Step</span>
@@ -133,9 +135,9 @@ export default function Navbar() {
                     </div>
                 </div>
 
-                {/* Right side - Profile or Login + Mobile menu */}
+                {/* right side - profile or login + mobile menu */}
                 <div className="flex items-center space-x-4">
-                    {/* Login Button or User Profile - Visible on all screen sizes */}
+                  
                     {!user ? (
 
                         <button className="px-2.5 py-0.5 md:px-3 md:py-1 bg-green-50 hover:bg-green-100 text-green-600 font-medium border border-green-200 rounded-md transition-all duration-200">
@@ -144,7 +146,7 @@ export default function Navbar() {
 
                     ) : (
                         <div className="flex items-center lg:space-x-5 space-x-1">
-                            {/* Credits Dropdown - Optimized for mobile */}
+                          
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button

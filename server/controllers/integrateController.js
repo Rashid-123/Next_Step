@@ -1,43 +1,6 @@
 import User from '../models/User.js';
 
 import axios from 'axios';
-// Generic function to update a specific field
-// export const integrate_Leetcode = async (req, res) => {
-
-//   console.log("In updateUserField function");
-
-//   try {
-//     const userId = req.user.id;
-//     const value = req.body.username;
-//     console.log("User ID:", userId);
-
-//     if (!value) {
-//       return res.status(400).json({ message: "leetcode username is required." });
-//     }
-
-//     console.log("Value to update:", value);
-
-//     const user = await User.findByIdAndUpdate(
-//       userId, 
-//       { leetcode: value },
-//       { new: true }
-//     );
-
-//     console.log("User after update:", user);
-
-//     if (!user) {
-//       return res.status(404).json({ message: "User not found." });
-//     } 
-//     console.log("User found:", user);
-//     res.status(200).json({
-//       message: `leetcode username updated successfully.`,
-//       user,
-//     });
-//   } catch (error) {
-//     res.status(500).json({ message: "Server error.", error: error.message });
-//   }
-// };
-
 
 
 
@@ -133,7 +96,7 @@ const validateLeetCodeUsername = async (username) => {
 
 // Helper function for basic username format validation
 const isValidUsernameFormat = (username) => {
-  const usernameRegex = /^[a-zA-Z0-9_-]{1,15}$/;
+  const usernameRegex = /^[a-zA-Z0-9_-]{1,20}$/;
   return usernameRegex.test(username);
 };
 
@@ -157,7 +120,7 @@ export const integrate_Leetcode = async (req, res) => {
     // Format validation
     if (!isValidUsernameFormat(username)) {
       return res.status(400).json({ 
-        message: "Invalid username format. Username should be 1-15 characters long and contain only letters, numbers, underscores, and hyphens." 
+        message: "Invalid username format. Username should be 1-20 characters long and contain only letters, numbers, underscores, and hyphens." 
       });
     }
 
