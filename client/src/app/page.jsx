@@ -17,8 +17,7 @@ const env = process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID;
 
 export default function Home() {
   const { user, token, loading } = useAuth();
-  console.log("Backend url  ", NEXT_BACKEND_URL);
-  console.log("env", env);
+  console.log(token);
   if (loading) {
     return <>
       <div className="flex flex-col items-center justify-center min-h-[500px]">

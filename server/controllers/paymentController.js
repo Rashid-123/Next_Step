@@ -1,6 +1,5 @@
 
-import razorpay from "../utils/razorpay.js"
-
+import razorpay from "../lib/razorpay.js"
 export const create_order = async (req, res) => {
   console.log("in create order")
   try {

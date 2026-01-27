@@ -25,7 +25,6 @@ if (!admin.apps.length) {
   });
 }
 
-const USER_CACHE_TTL_SECONDS = 60 * 15;
 
 const handleAuth = async (req, res) => {
   try {
@@ -41,19 +40,6 @@ const handleAuth = async (req, res) => {
 
     const cacheKey = `user:${uid}`;
     let user;
-
-    // --- Try to get user from cache ---
-    // try {
-    //   const cachedUser = await redis.get(cacheKey);
-    //   if (cachedUser) {
-    //     console.log(`User ${uid} found in cache.`);
-    //     user = JSON.parse(cachedUser); // Parse the cached JSON string back to an object
-    //   }
-    // } catch (cacheError) {
-    //   console.error("Error reading from Redis cache for user:", cacheError);
-    //   // Don't block the request, proceed to database if caching fails
-    // }
-
 
     if (!user) {
       // console.log(`User ${uid} not found in cache, fetching from DB.`);

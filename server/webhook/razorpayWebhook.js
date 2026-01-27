@@ -10,14 +10,14 @@ export const razorpayWebhook = async (req, res) => {
 
     const expected = crypto
         .createHmac("sha256", secret)
-        .update(req.body) 
+        .update(req.body)
         .digest("hex");
 
     if (signature !== expected) {
         return res.status(400).send("Invalid signature");
     }
 
-const event = JSON.parse(req.body.toString());
+    const event = JSON.parse(req.body.toString());
 
     if (event.event !== "payment.captured") {
         return res.status(200).send("Ignored");

@@ -5,11 +5,15 @@ dotenv.config();
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
+//
 import authRoutes from "./routes/authRoutes.js";
 import bookmarkRoutes from "./routes/bookmarkRoutes.js";
 import integateRoutes from "./routes/integrateRoutes.js";
 import recommendRoutes from "./routes/recommendRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js"
+//
+import { globalRateLimiter } from "./middleware/globalRateLimiter.js";
+//
 import { razorpayWebhook } from "./webhook/razorpayWebhook.js";
 
 const app = express();
@@ -40,6 +44,9 @@ app.post(
 
 app.use(express.json());
 
+// ---------- Global rate limiter ----------
+app.use(globalRateLimiter);  
+
 mongoose
   .connect(MONGO_URI, {
     useNewUrlParser: true,
@@ -52,6 +59,8 @@ app.get("/api/ping", (req, res) => {
   console.log("Ping , Bakend is awake !")
   res.status(200).json({ status: "ok", message: "Backend is awake!" });
 });
+
+
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/bookmark", bookmarkRoutes);

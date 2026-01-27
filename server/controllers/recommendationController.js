@@ -3,6 +3,7 @@ import Recommendation from '../models/Recommendation.js';
 import recommendProblems from '../utils/recommendProblems.js';
 export const createRecommendation = async (req, res) => {
     const userId = req.user._id;
+    console.log(req.user)
     const { problemNumbers, numRecommendations, Hard, name } = req.body;
 
     console.log('Controller input:', { problemNumbers, numRecommendations, Hard, name });
@@ -174,7 +175,7 @@ export const getAllRecommendations = async (req, res) => {
 
 //------------- Get a specific recommendation by ID -----------
 export const getRecommendation = async (req, res) => {
-    const userId = req.user.id;
+    const userId = req.user._id;
     const { id } = req.params;
 
     try {
