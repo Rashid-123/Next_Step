@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { createContext, useContext, useState, useEffect } from 'react';
@@ -10,10 +9,11 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
-  sendEmailVerification 
+  sendEmailVerification
 } from 'firebase/auth';
-import { auth } from "../lib/firebase/config"; 
+import { auth } from "../lib/firebase/config";
 import axios from 'axios';
+
 
 const AuthContext = createContext({});
 
@@ -32,7 +32,18 @@ export const AuthProvider = ({ children }) => {
       const idToken = await result.user.getIdToken();
       setToken(idToken);
       // Send to backend to create/find user in MongoDB
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, { idToken });
+      // const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, { idToken });
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+            "Content-Type": "application/json"
+          }
+        }
+      )
+
+
 
       // User data from backend
       setUser(response.data.user);
@@ -82,7 +93,17 @@ export const AuthProvider = ({ children }) => {
       const idToken = await result.user.getIdToken();
       setToken(idToken);
       // Send to backend to create/find user in MongoDB
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, { idToken });
+      // const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, { idToken });
+
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      )
 
       // User data from backend
       setUser(response.data.user);
@@ -125,17 +146,28 @@ export const AuthProvider = ({ children }) => {
             const idToken = await firebaseUser.getIdToken();
             setToken(idToken);
             // Fetch user data from backend
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, { idToken });
+            // const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, { idToken });
+            console.log(token)
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`,
+              {},
+              {
+                headers: {
+                  Authorization: `Bearer ${idToken}`,
+                  "Content-Type": "application/json"
+                }
+              }
+            )
+
             setUser(response.data.user);
           } catch (error) {
             console.error('Error fetching user data from backend:', error);
-            setUser(null); 
-         
+            setUser(null);
+
           }
         } else {
-       
+
           setUser(null);
-       
+
         }
       } else {
         setUser(null);

@@ -23,11 +23,11 @@ export default function Integrate() {
             if (user.leetcode) {
                 setLeetcodeInput(user.leetcode);
                 setOriginalValue(user.leetcode);
-                setIsEditingLeetcode(false); 
+                setIsEditingLeetcode(false);
             } else {
                 setLeetcodeInput("");
                 setOriginalValue("");
-                setIsEditingLeetcode(true); 
+                setIsEditingLeetcode(true);
             }
         }
     }, [user]);
@@ -53,12 +53,12 @@ export default function Integrate() {
         const value = e.target.value;
         setLeetcodeInput(value);
 
-     
+
         setError("");
         setSuccess("");
         setFormatError("");
 
-        
+
         if (isEditingLeetcode && value.trim() !== "") {
             const username = extractUsername(value);
             if (!isValidUsernameFormat(username)) {
@@ -113,7 +113,7 @@ export default function Integrate() {
     const handleSave = async () => {
         const username = extractUsername(leetcodeInput);
 
-      
+
         setError("");
         setSuccess("");
         setFormatError("");
@@ -140,7 +140,8 @@ export default function Integrate() {
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     }
-                });
+                }
+            );
 
             // Update user data
             setUser(response.data.user);

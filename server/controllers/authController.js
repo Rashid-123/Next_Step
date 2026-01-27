@@ -28,7 +28,8 @@ if (!admin.apps.length) {
 
 const handleAuth = async (req, res) => {
   try {
-    const { idToken } = req.body;
+    // const { idToken } = req.body;
+    const idToken = req.auth.token;
 
     if (!idToken) {
       return res.status(400).json({ error: 'ID token is required' });
@@ -38,64 +39,45 @@ const handleAuth = async (req, res) => {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     const { uid, email, name, picture } = decodedToken;
 
-    const cacheKey = `user:${uid}`;
-    let user;
+    let user = await User.findOne({ firebaseUID: uid });
 
     if (!user) {
-      // console.log(`User ${uid} not found in cache, fetching from DB.`);
 
-      user = await User.findOne({ firebaseUID: uid });
+      let displayNameToUse = name;
 
-      if (!user) {
+      if (!displayNameToUse && email) {
 
-        let displayNameToUse = name;
-
-        if (!displayNameToUse && email) {
-
-          const emailPrefix = email.split('@')[0];
-          displayNameToUse = emailPrefix
-            .replace(/[^a-zA-Z0-9]/g, ' ')
-            .split(' ')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(' ')
-            .trim();
+        const emailPrefix = email.split('@')[0];
+        displayNameToUse = emailPrefix
+          .replace(/[^a-zA-Z0-9]/g, ' ')
+          .split(' ')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ')
+          .trim();
 
 
-          if (!displayNameToUse || /^\d+$/.test(displayNameToUse)) {
-            displayNameToUse = 'New User';
-          }
-        }
-
-        if (!displayNameToUse) {
+        if (!displayNameToUse || /^\d+$/.test(displayNameToUse)) {
           displayNameToUse = 'New User';
         }
-
-
-        const photoURLToUse = picture || '';
-
-
-        console.log(`Creating new user for UID: ${uid}`);
-        user = new User({
-          firebaseUID: uid,
-          email,
-          displayName: displayNameToUse,
-          photoURL: photoURLToUse,
-          role: 'user',
-          bookmarked: [],
-          credits: 50
-        });
-        await user.save();
       }
 
-      // // --- Cache the user object after fetching/creating ---
-      // try {
+      if (!displayNameToUse) {
+        displayNameToUse = 'New User';
+      }
 
-      //   await redis.set(cacheKey, JSON.stringify(user.toObject()), { ex: USER_CACHE_TTL_SECONDS });
-      //   console.log(`User ${uid} cached successfully.`);
-      // } catch (cacheError) {
-      //   console.error("Error writing to Redis cache for user:", cacheError);
-      //   // Don't block the request if caching fails
-      // }
+      const photoURLToUse = picture || '';
+
+      console.log(`Creating new user for UID: ${uid}`);
+      user = new User({
+        firebaseUID: uid,
+        email,
+        displayName: displayNameToUse,
+        photoURL: photoURLToUse,
+        role: 'user',
+        bookmarked: [],
+        credits: 50
+      });
+      await user.save();
     }
 
     // Respond with the user data (ensure it's a plain object)
