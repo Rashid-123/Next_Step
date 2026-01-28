@@ -1,19 +1,15 @@
 import User from "../models/User.js";
 import crypto from "crypto"
+import Payment from "../models/Payment.js";
 
 
 export const razorpayWebhook = async (req, res) => {
-    console.log("razorpay hit the backend")
     const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
-
     const signature = req.headers["x-razorpay-signature"];
 
-    const expected = crypto
-        .createHmac("sha256", secret)
-        .update(req.body)
-        .digest("hex");
+    const expectedSignature = crypto.createHmac("sha256", secret).update(req.body).digest("hex");
 
-    if (signature !== expected) {
+    if (signature != expectedSignature) {
         return res.status(400).send("Invalid signature");
     }
 
@@ -23,37 +19,56 @@ export const razorpayWebhook = async (req, res) => {
         return res.status(200).send("Ignored");
     }
 
-    const payment = event.payload.payment.entity;
-    const paymentId = payment.id;
-    const orderNotes = payment.notes;
-    const userId = orderNotes.userId;
+    const paymentEntity = event.payload.payment.entity;
 
-    // ---  Credit Mapping  ----
+    const razorpayPaymentId = paymentEntity.id;
+    const razorpayOrderId = paymentEntity.order_id;
+    const amount = paymentEntity.amount;
+    const userId = paymentEntity.notes?.userId;
+    
+    // Credit mapping
     const CREDIT_MAP = {
         19900: 50,
         49900: 150,
+    };
+
+    const creditsToAdd = CREDIT_MAP[amount];
+    if (!creditsToAdd || !userId) {
+        return res.status(200).send("Invalid payment data");
     }
 
-    const creditsToAdd = CREDIT_MAP[payment.amount];
-    if (!creditsToAdd) {
-        return res.status(200).send("Unknown amount");
+    // ---------------- IDEMPOTENCY BARRIER ---------------
+
+    try {
+        await Payment.create({
+            razorpayPaymentId,
+            razorpayOrderId,
+            userId,
+            amount,
+            creditsAdded: creditsToAdd,
+            status: "captured",
+            event: event.event,
+            rawEvent: event,
+        });
+
+
+    } catch (err) {
+        // DUPLICATE WEBHOOK (already processed)
+        if (err.code === 11000) {
+            return res.status(200).send("Already processed");
+        }
+        throw err;
     }
 
-    const user = await User.findById(userId);
-    if (!user) {
-        return res.status(200).send("User not found");
-    }
+    // ATOMIC CREDIT UPDATE ----------------
 
-    //----------- Handling IDEMPOTENCY ------------------
-    if (user.processedPayments.includes(paymentId)) {
-        return res.status(200).send("Already Processed");
-    }
+    await User.findByIdAndUpdate(
+        userId,
+        { $inc: { credits: creditsToAdd } },
+        { new: true }
+    );
 
-    user.credits += creditsToAdd;
-    user.processedPayments.push(paymentId);
+    return res.status(200).send("Credit added");
 
-    await user.save();
-
-    return res.status(200).send("Credits added");
 
 }

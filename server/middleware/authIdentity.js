@@ -1,11 +1,11 @@
 import admin from "firebase-admin";
 
 export const authIdentity = async (req, res, next) => {
-    console.log("-------- inside the authidentiry")
-    console.log(`------- req.headers.authorization : `, req.headers.authorization)
+    // console.log("-------- inside the authidentiry")
+    // console.log(`------- req.headers.authorization : `, req.headers.authorization)
     const auth = req.headers.authorization;
     
-    console.log(`----------- req.body = ` ,req.body);
+    // console.log(`----------- req.body = ` ,req.body);
 
     if (!auth?.startsWith("Bearer ")) {
         return res.status(401).json({ message: "Unauthorized" });

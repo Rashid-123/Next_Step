@@ -1,10 +1,19 @@
 
 import razorpay from "../lib/razorpay.js"
 export const create_order = async (req, res) => {
-  console.log("in create order")
+
+  console.log("---------- in create order")
   try {
-    const { amount } = req.body;
-    // console.log("amount " , amount)
+    const { plan } = req.body;
+
+    const AMOUNT_MAP = {
+      "STARTER": 199,
+      "POWER": 499,
+    }
+
+    const amount = AMOUNT_MAP[plan];
+
+    console.log("-------amount------------ " , amount)
     const order = await razorpay.orders.create({
       amount: amount * 100, // amount in paise
       currency: "INR",

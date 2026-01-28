@@ -4,10 +4,11 @@
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 import { CheckCircle, Crown, Zap } from "lucide-react";
+import { useState } from "react";
 
 export default function Payment() {
     const { token, user, setUser, loading } = useAuth();
-
+    const [processing, setProcessing] = useState(false);
     const loadRazorpayScript = () => {
         return new Promise((resolve) => {
             const script = document.createElement("script");
@@ -18,9 +19,11 @@ export default function Payment() {
         });
     };
 
-   
 
-    const handleBuyCredits = async (amount) => {
+
+    const handleBuyCredits = async (plan) => {
+        if (processing) return;
+        setProcessing(true);
         const loaded = await loadRazorpayScript();
 
         if (!loaded) {
@@ -32,7 +35,7 @@ export default function Payment() {
             //  Create order
             const { data } = await axios.post(
                 `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/payment/create-order`,
-                { amount },
+                { plan },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -51,47 +54,52 @@ export default function Payment() {
                     alert("Payment successful. Updating credits...");
 
                     // Poll backend for updated credits
-                    const initialCredits = user?.credits || 0;
-                    let attempts = 0;
-                    const MAX_ATTEMPTS = 10;
+                    setTimeout(() => {
+                        const initialCredits = user?.credits || 0;
+                        let attempts = 0;
+                        const MAX_ATTEMPTS = 10;
 
-                    const interval = setInterval(async () => {
-                        attempts++;
+                        const interval = setInterval(async () => {
+                            attempts++;
 
-                        try {
-                            const res = await axios.get(
-                                `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/getUser`,
-                                {
-                                    headers: {
-                                        Authorization: `Bearer ${token}`,
-                                    },
-                                }
-                            );
-
-                            if (res.data?.success) {
-                                const updatedCredits = res.data.data.credits;
-
-                                if (updatedCredits > initialCredits) {
-                                    setUser((prev) => ({
-                                        ...prev,
-                                        credits: updatedCredits,
-                                    }));
-
-                                    clearInterval(interval);
-                                    alert("Credits added successfully 🎉");
-                                }
-                            }
-
-                            if (attempts >= MAX_ATTEMPTS) {
-                                clearInterval(interval);
-                                alert(
-                                    "Payment received. Credits will be added shortly if not visible yet."
+                            try {
+                                const res = await axios.get(
+                                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/getUser`,
+                                    {
+                                        headers: {
+                                            Authorization: `Bearer ${token}`,
+                                        },
+                                    }
                                 );
+
+                                if (res.data?.success) {
+                                    const updatedCredits = res.data.data.credits;
+
+                                    if (updatedCredits > initialCredits) {
+                                        setUser((prev) => ({
+                                            ...prev,
+                                            credits: updatedCredits,
+                                        }));
+
+                                        clearInterval(interval);
+                                        alert("Credits added successfully 🎉");
+                                    }
+                                }
+
+                                if (attempts >= MAX_ATTEMPTS) {
+                                    clearInterval(interval);
+                                    alert(
+                                        "Payment received. Credits will be added shortly if not visible yet."
+                                    );
+                                }
+                            } catch (err) {
+                                console.error("Credit polling failed:", err);
                             }
-                        } catch (err) {
-                            console.error("Credit polling failed:", err);
-                        }
-                    }, 2000);
+                        }, 3000);
+
+                    }, [3000])
+
+
                 },
 
                 prefill: {
@@ -126,6 +134,8 @@ export default function Payment() {
         } catch (error) {
             console.error("Order creation failed:", error);
             alert("Unable to initiate payment. Please try again later.");
+        } finally {
+            setProcessing(false);
         }
     };
 
@@ -180,8 +190,9 @@ export default function Payment() {
                         </div>
 
                         <button
-                            onClick={() => handleBuyCredits(199, 50)}
-                            className="w-full bg-blue-500 text-white py-3 sm:py-4 px-4 sm:px-6 rounded-lg text-sm sm:text-base font-semibold hover:bg-white hover:text-gray-600 border border-blue-400 transition-colors"
+                            disabled={processing}
+                            onClick={() => handleBuyCredits("STARTER")}
+                            className="w-full bg-blue-500 text-white py-3 sm:py-4 px-4 sm:px-6 rounded-lg text-sm sm:text-base font-semibold hover:bg-white hover:text-gray-600 border border-blue-400 transition-colors cursor-pointer"
                         >
                             Get Starter Plan
                         </button>
@@ -222,8 +233,9 @@ export default function Payment() {
                         </div>
 
                         <button
-                            onClick={() => handleBuyCredits(499, 150)}
-                            className="w-full bg-purple-500 text-white py-3 sm:py-4 px-4 sm:px-6 rounded-lg text-sm sm:text-base font-semibold hover:bg-white hover:text-gray-600 border border-purple-400 transition-colors"
+                            disabled={processing}
+                            onClick={() => handleBuyCredits("POWER")}
+                            className="w-full bg-purple-500 text-white py-3 sm:py-4 px-4 sm:px-6 rounded-lg text-sm sm:text-base font-semibold hover:bg-white hover:text-gray-600 border border-purple-400 transition-colors cursor-pointer"
                         >
                             Get Power Plan
                         </button>

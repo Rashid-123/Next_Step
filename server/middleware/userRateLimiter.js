@@ -4,9 +4,9 @@ import { memoryLimit } from "../utils/memoryLimiter.js";
 const USER_LIMIT = 10;
 
 export const userRateLimiter = async (req, res, next) => {
-    console.log(`auth object inside the userRatelimiter -- ${req.auth}`)
+    // console.log(`auth object inside the userRatelimiter -- ${req.auth}`)
     const uid = req.auth.uid;
-    console.log(uid)
+    // console.log(uid)
     const second = Math.floor(Date.now() / 1000);
     const key = `rate:user:${uid}:${second}`;
 

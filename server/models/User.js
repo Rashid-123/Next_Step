@@ -31,10 +31,10 @@ const UserSchema = new mongoose.Schema(
     credits:{type: Number , default: 0},
 
    // Payment 
-   processedPayments: {
-    type:[String],  // razorpay payment_id
-    default: []
-   },
+  //  processedPayments: {
+  //   type:[String],  // razorpay payment_id
+  //   default: []
+  //  },
 
     recommendationHistory: [
       {
