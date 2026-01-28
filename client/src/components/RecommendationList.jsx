@@ -1,8 +1,7 @@
 import RecommendationCard from "./RecommendationCard";
 
 export default function RecommendationList({ recommendations }) {
-    // RecommendationList now expects to always receive data (or an empty array)
-    // It no longer handles the 'user not logged in' state.
+  
 
     if (recommendations.length === 0) {
         return (

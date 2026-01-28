@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import { AuthProvider } from "@/context/AuthContext";
 import { Toaster } from "react-hot-toast";
 import { LeetCodeProvider } from "@/context/LeetCodeContext";
-
+import QueryProvider from "./QueryProvider";
 const openSans = Open_Sans({
   variable: "--font-open-sans",
   subsets: ["latin"],
@@ -28,6 +28,7 @@ export default function RootLayout({ children }) {
     <html lang="en" className={`${openSans.variable} ${orbitron.variable}`}>
       <body className="antialiased font-sans min-h-screen flex flex-col">
         <LeetCodeProvider>
+          <QueryProvider >
           <AuthProvider>
             <Navbar />
             <Toaster
@@ -51,6 +52,7 @@ export default function RootLayout({ children }) {
             
             <Footer />
           </AuthProvider>
+          </QueryProvider>
         </LeetCodeProvider>
       </body>
     </html>
