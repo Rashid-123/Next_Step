@@ -1,46 +1,31 @@
+
 'use client';
 
 import React, { useEffect, useState } from "react";
 import { ExternalLink, MessageSquare, X } from "lucide-react";
 import { useParams } from "next/navigation";
 
+import { fetchRecommnedation } from "@/lib/api/recommendations";
+import { useQuery } from "@tanstack/react-query"
 import { useAuth } from "@/context/AuthContext";
+//
+import { RecommendationDetailsSkeleton } from "@/components/skeleton/recommendationSkeleton";
 
 export default function RecommendationDetails() {
-    const { token } = useAuth();
-    const { id } = useParams();
-    const [recommendation, setRecommendation] = useState(null);
-    const [loading, setLoading] = useState(true);
     const [selectedMessage, setSelectedMessage] = useState(null);
     const [isSlideOpen, setIsSlideOpen] = useState(false);
+    const { token } = useAuth();
+    const { id } = useParams();
 
-    useEffect(() => {
-        const fetchRecommendation = async () => {
-            if (!token || !id) return;
 
-            try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/recommend/${id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+    const { data, isLoading, isError, error, } = useQuery({
+        queryKey: ["recommendation", id, token],
+        queryFn: fetchRecommnedation,
+        enabled: !!token && !!id,
+        staleTime: 15 * 60 * 1000,
+    })
 
-                const data = await res.json();
-
-                if (res.ok) {
-                    setRecommendation(data.recommendation);
-                } else {
-                    console.error(data.error);
-                }
-            } catch (error) {
-                console.error("Failed to fetch recommendation", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchRecommendation();
-    }, [token, id]);
+    const recommendation = data?.recommendation;
 
     const openMessage = (message) => {
         setSelectedMessage(message);
@@ -63,53 +48,19 @@ export default function RecommendationDetails() {
         }
     };
 
-    // --- Skeleton Component ---
-    const RecommendationDetailsSkeleton = () => (
-        <div className="min-h-screen py-6 mt-8 animate-pulse">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Header Skeleton */}
-                <div className="bg-gray-100 border border-gray-200 rounded-xl p-6 mb-6 shadow-xs">
-                    <div className="h-7 bg-blue-100 rounded w-3/4 mb-4"></div> {/* Title */}
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <div className="flex items-center gap-2">
-                            <div className="h-4 bg-blue-100 rounded w-18"></div>
-                            <div className="h-6 bg-gray-100 rounded-lg w-16"></div>
-                        </div>
-                        <div className="flex items-center gap-2 sm:ml-auto">
-                            <div className="h-4 w-4 bg-gray-100 rounded"></div>
-                            <div className="h-4 bg-gray-100 rounded w-20"></div>
-                            <div className="h-4 bg-gray-100 rounded w-24"></div>
-                        </div>
-                    </div>
-                </div>
+ 
 
-                {/* Problems List Skeleton (e.g., 3 items) */}
-                <div className="space-y-3">
-                    {[...Array(5)].map((_, index) => ( 
-                        <div key={index} className="bg-gray-100 border border-gray-200 rounded-lg p-4 shadow-xs">
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
-                                <div className="flex-1 space-y-1">
-                                    <div className="flex items-center space-x-2">
-                                        <div className="h-5 bg-red-100 rounded border w-16"></div>
-                                        <div className="h-6 bg-gray-200 rounded w-64"></div>
-                                    </div>
-                                </div>
-                                <div className="flex items-center space-x-2 mt-2 sm:mt-0 sm:ml-4">
-                                    <div className="h-8 bg-gray-200 rounded w-24"></div>
-                                    <div className="h-8 bg-yellow-100 rounded w-24"></div>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </div>
-    );
-    // --- End Skeleton Component ---
-
-
-    if (loading) {
+    if (isLoading) {
         return <RecommendationDetailsSkeleton />; // Render the skeleton when loading
+    }
+
+
+    if (isError) {
+        return (
+            <div className="min-h-screen flex items-center justify-center text-red-500">
+                {error.message}
+            </div>
+        );
     }
 
     if (!recommendation) {

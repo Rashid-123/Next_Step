@@ -30,18 +30,6 @@ const UserSchema = new mongoose.Schema(
     github: String,
     credits:{type: Number , default: 0},
 
-   // Payment 
-  //  processedPayments: {
-  //   type:[String],  // razorpay payment_id
-  //   default: []
-  //  },
-
-    recommendationHistory: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Recommendation",
-      },
-    ],
   },
   { timestamps: true }
 );

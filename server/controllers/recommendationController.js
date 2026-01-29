@@ -1,6 +1,7 @@
 import User from '../models/User.js';
 import Recommendation from '../models/Recommendation.js';
 import recommendProblems from '../utils/recommendProblems.js';
+import {redis} from "../lib/redis.js"
 export const createRecommendation = async (req, res) => {
     const userId = req.user._id;
     console.log(req.user)
@@ -35,11 +36,11 @@ export const createRecommendation = async (req, res) => {
     const includeHard = Hard === "true" || Hard === true;
 
     try {
-        console.log('Calling recommendProblems with:', {
-            problemNumbers: convertedProblemNumbers,
-            numRecommendations,
-            includeHard
-        });
+        // console.log('Calling recommendProblems with:', {
+        //     problemNumbers: convertedProblemNumbers,
+        //     numRecommendations,
+        //     includeHard
+        // });
 
         // ----------- timeout to catch hanging requests --------
         const timeoutPromise = new Promise((_, reject) =>
@@ -79,41 +80,54 @@ export const createRecommendation = async (req, res) => {
         }));
 
         // ----------  new recommendation document ------
-        const recommendationDoc = new Recommendation({
+        const doc = await Recommendation.create({
+            userId,
             recommendations: formattedRecommendations,
-            name: name,
-            createdAt: new Date()
+            name,
+            createdAt: new Date(),
         });
 
-        console.log("Creating recommendation document:", recommendationDoc);
 
-       
-        const savedRecommendation = await recommendationDoc.save();
-        console.log("Saved recommendation:", savedRecommendation._id);
-
-      
         const updatedUser = await User.findByIdAndUpdate(
             userId,
-            {
-                $push: { recommendationHistory: savedRecommendation._id },
-                $inc: { credits: -numRecommendations }
-            },
+            { $inc: { credits: -numRecommendations } },
             { new: true }
         );
 
+        // --------- REDIS WRITE ---------------- 
+
+        const listKey = `user:${userId}:recommendations:list`;
+        const recKey = `recommendation:${doc._id}`
+
+        //  Individual cache
+        await redis.set(recKey, JSON.stringify(doc), { EX: 3600 });
+
+        // list cache (prepend newest)
+        await redis.lpush(
+            listKey,
+            JSON.stringify({
+                id: doc._id,
+                count: doc.recommendations.length,
+                name: doc.name,
+                date: doc.createdAt,
+            })
+        )
+        await redis.expire(listKey, 3600);
+
+
         return res.status(200).json({
             message: 'Recommendation created successfully',
-            recommendationId: savedRecommendation._id,
+            recommendationId: doc._id,
             recommendations: formattedRecommendations,
             name: name,
-            createdAt: savedRecommendation.createdAt,
+            createdAt: doc.createdAt,
             credits: updatedUser.credits
         });
 
     } catch (error) {
         console.error("Error creating recommendation:", error);
 
-        
+
         if (error.message.includes('timeout')) {
             return res.status(408).json({
                 error: 'Request timeout - recommendation service took too long'
@@ -142,31 +156,50 @@ export const createRecommendation = async (req, res) => {
 //----------- Get all recommendations for a user ------------------
 
 export const getAllRecommendations = async (req, res) => {
-    // console.log("Get all recommendations called");
+    console.log("---------Get all recommendations called");
     const userId = req.user._id;
     console.log("User ID:", userId);
+
+    const listKey = `user:${userId}:recommendations:list`
+
     try {
-        const user = await User.findById(userId).populate({
-            path: 'recommendationHistory',
-            options: { sort: { createdAt: -1 } }
-        });
-        //   console.log("User with recommendations:", user);
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+
+        const cached = await redis.lrange(listKey, 0, -1);
+        console.log(cached)
+
+        if (cached.length) {
+            console.log("------ All response from the cache")
+            return res.status(200).json({
+                message: "Recommendations retrieved successfully from cache",
+                  recommendations: cached,
+            })
         }
 
-       
-        const formatted = user.recommendationHistory.map(rec => ({
+        const docs = await Recommendation.find({ userId })
+            .select("_id name createdAt recommendations")
+            .sort({ createdAt: -1 });
+
+
+        const formatted = docs.map(rec => ({
             id: rec._id,
             count: rec.recommendations.length,
             name: rec.name,
-            date: rec.createdAt
+            date: rec.createdAt,
         }));
-        // console.log("Formatted recommendations:", formatted);
+
+        if (formatted.length) {
+            await redis.del(listKey);
+            for (const item of formatted) {
+                await redis.rpush(listKey, JSON.stringify(item));
+            }
+            await redis.expire(listKey, 3600);
+        }
+
         return res.status(200).json({
             message: 'Recommendations retrieved successfully',
             recommendations: formatted
         });
+
     } catch (error) {
         console.error("Error retrieving recommendations:", error);
         return res.status(500).json({ error: 'Internal server error' });
@@ -175,25 +208,37 @@ export const getAllRecommendations = async (req, res) => {
 
 //------------- Get a specific recommendation by ID -----------
 export const getRecommendation = async (req, res) => {
+    console.log("----------- Get individual recommendatoin ")
     const userId = req.user._id;
     const { id } = req.params;
+    const recKey = `recommendation:${id}`;
+
 
     try {
-        const recommendation = await Recommendation.findById(id);
+        const cached = await redis.get(recKey);
+        if (cached) {
+            console.log("--------- individual response from the cache")
+            return res.status(200).json({
+                message: "Recommendation retrieved successfully from cache",
+                recommendation: cached,
+            });
+        }
+
+        const recommendation = await Recommendation.findOne({
+            _id: id,
+            userId,
+        });
 
         if (!recommendation) {
             return res.status(404).json({ error: 'Recommendation not found' });
         }
 
-        // Check if the recommendation belongs to the user
-        const user = await User.findById(userId);
-        if (!user || !user.recommendationHistory.includes(id)) {
-            return res.status(403).json({ error: 'Forbidden' });
-        }
+        await redis.set(recKey, JSON.stringify(recommendation), { EX: 3600 });
+
 
         return res.status(200).json({
-            message: 'Recommendation retrieved successfully',
-            recommendation
+            message: "Recommendation retrieved successfully",
+            recommendation,
         });
     } catch (error) {
         console.error("Error retrieving recommendation:", error);

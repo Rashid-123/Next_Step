@@ -6,7 +6,7 @@ const RecommendedProblemSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  title:{
+  title: {
     type: String,
     required: true,
   },
@@ -26,10 +26,15 @@ const RecommendedProblemSchema = new mongoose.Schema({
     type: String,
   },
 }, { _id: true });
- 
+
 // Schema for the entire recommendation event
 const RecommendationSchema = new mongoose.Schema(
   {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true, 
+    },
     recommendations: {
       type: [RecommendedProblemSchema],
       required: true,
@@ -40,10 +45,13 @@ const RecommendationSchema = new mongoose.Schema(
     },
     createdAt: {
       type: Date,
-      default: Date.now,
+      default: Date.now,    
     },
   }
 );
 
+RecommendationSchema.index({ userId: 1, createdAt: -1 }); // compound index
+
+
 export default mongoose.models.Recommendation ||
-mongoose.model("Recommendation", RecommendationSchema);
+  mongoose.model("Recommendation", RecommendationSchema);
