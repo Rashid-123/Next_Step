@@ -175,7 +175,7 @@ export default function Navbar() {
                             {/* Profile Dropdown */}
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Avatar className="h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 cursor-pointer flex-shrink-0">
+                                    <Avatar className="h-7 w-7 sm:h-9 sm:w-9 lg:h-10 lg:w-10 cursor-pointer flex-shrink-0">
                                         <AvatarImage src={user.photoURL} alt="Profile" />
                                         <AvatarFallback>{getUserInitials()}</AvatarFallback>
                                     </Avatar>

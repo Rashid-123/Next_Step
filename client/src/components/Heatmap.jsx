@@ -8,30 +8,8 @@ import { fromUnixTime, format, subMonths } from 'date-fns';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 import { useLeetCode } from '@/context/LeetCodeContext';
+import { HeatmapSkeleton } from './skeleton/homeSkeleton';
 import Nolinked from './Nolinked';
-
-const SkeletonLoader = () => {
-    return (
-        <div className="animate-pulse">
-           
-            <div className="grid grid-cols-53 gap-1 mb-4">
-                {Array.from({ length: 371 }).map((_, i) => (
-                    <div key={i} className="w-2.5 h-2.5 bg-green-200 rounded-sm"></div>
-                ))}
-            </div>
-
-           
-            <div className="flex items-center gap-2 text-sm">
-                <div className="w-8 h-4 bg-gray-200 rounded"></div>
-                {Array.from({ length: 5 }).map((_, i) => (
-                    <div key={i} className="w-4 h-4 bg-gray-200 rounded-sm"></div>
-                ))}
-                <div className="w-8 h-4 bg-gray-200 rounded"></div>
-            </div>
-        </div>
-    );
-};
-
 
 
 export default function Heatmap({ username }) {
@@ -86,7 +64,7 @@ export default function Heatmap({ username }) {
                 </div>
             ) : isLoading ? (
                 <div className="my-6">
-                    <SkeletonLoader />
+                    <HeatmapSkeleton />
                 </div>
             ) : leetcodeError ? (
                 <div className="my-6 flex flex-col items-center justify-center py-12 text-center">

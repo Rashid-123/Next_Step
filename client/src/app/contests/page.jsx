@@ -10,7 +10,7 @@ import axios from 'axios';
 import { Button } from "@/components/ui/button";
 import { FilterIcon, ChevronUp, ChevronDown } from "lucide-react";
 import { toast } from 'react-hot-toast';
-import ContestsLoadingSkeleton from '@/components/ContestsLoadingSkeleton';
+import ContestsLoadingSkeleton from '@/components/skeleton/ContestsLoadingSkeleton';
 
 export default function ContestsPage() {
     const {

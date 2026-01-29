@@ -1,48 +1,11 @@
 
-
-
 'use client';
 import { useEffect } from 'react';
 import { useLeetCode } from '@/context/LeetCodeContext';
 import SubmissionItem from '@/components/SubmissionItem';
 import { User } from 'lucide-react';
 import Nolinked from './Nolinked';
-// Skeleton component for loading state
-function SubmissionSkeleton() {
-    return (
-        <li className="p-3 sm:p-5 border border-gray-200 rounded-lg sm:rounded-2xl animate-pulse">
-            <div className="flex items-center justify-between gap-2 mb-2">
-                <div className="h-4 bg-blue-100 rounded w-3/4"></div>
-                <div className="h-4 w-4 bg-blue-100 rounded-full flex-shrink-0"></div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-y-2">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2 mr-auto">
-                    <div className="h-3 bg-green-200 rounded w-16"></div>
-                    <div className="h-3 bg-gray-200 rounded w-24 mt-0.5 sm:mt-0"></div>
-                </div>
-
-                <div className="flex gap-2 mt-1 sm:mt-0">
-                    <div className="h-5 bg-gray-200 rounded w-12"></div>
-                    <div className="h-5 bg-gray-200 rounded w-10"></div>
-                </div>
-            </div>
-        </li>
-    );
-}
-
-// Loading skeleton for multiple items
-function LoadingSkeleton() {
-    return (
-        <ul className="space-y-4 overflow-y-auto mt-4 pr-2" style={{ maxHeight: '450px' }}>
-            {[...Array(5)].map((_, index) => (
-                <SubmissionSkeleton key={index} />
-            ))}
-        </ul>
-    );
-}
-
-
+import { SubmissionSkeleton } from './skeleton/homeSkeleton';
 
 
 export default function Activity({ username }) {
@@ -68,7 +31,7 @@ export default function Activity({ username }) {
             ) : (
                 <>
                     {/* Loading state with skeleton */}
-                    {isLoading && <LoadingSkeleton />}
+                    {isLoading && <SubmissionSkeleton />}
 
                     {/* Error state */}
                     {leetcodeError && !isLoading && (

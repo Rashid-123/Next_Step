@@ -10,6 +10,7 @@ import POD from "@/components/POD";
 import Hero from "@/components/Hero";
 import { SiLeetcode } from "react-icons/si";
 import { Loader2 } from "lucide-react";
+
 const NEXT_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 const env = process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID;
 
