@@ -22,8 +22,8 @@ const MONGO_URI = process.env.MONGO_URI;
 
 
 const FRONTEND_URLS = [
-  "https://next-step-iota-liard.vercel.app", // production
-  "http://localhost:3000", // development
+  "https://leetai.live/", 
+  "http://localhost:3000",
 ];
 
 // Middleware
