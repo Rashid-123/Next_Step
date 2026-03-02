@@ -19,7 +19,7 @@ export const authIdentity = async (req, res, next) => {
         req.auth = { uid: decoded.uid , token:token};
         console.log(req.auth)
       
-       console.log("----  auth identity end ")
+        console.log("----  auth identity end ")
 
         next();
  

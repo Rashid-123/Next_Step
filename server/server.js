@@ -22,7 +22,7 @@ const MONGO_URI = process.env.MONGO_URI;
 
 
 const FRONTEND_URLS = [
-  "https://leetai.live/", 
+  "https://leetai.live", 
   "http://localhost:3000",
 ];
 
