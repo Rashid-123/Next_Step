@@ -79,7 +79,7 @@ export default function Footer() {
                 <div className=" flex flex-col items-center border-t border-gray-700 mt-4 pt-6">
 
                     <p className="text-sm text-gray-500 text-align-center ">
-                        © {new Date().getFullYear()} NextStep. Built with ❤️
+                        © {new Date().getFullYear()} LeetAi. Built with ❤️
                     </p>
 
 

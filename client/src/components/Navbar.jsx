@@ -101,7 +101,7 @@ export default function Navbar() {
                 {/* logo */}
                
                 <div className="text-xl font-bold text-gray-900 tracking-wide" style={{ fontFamily: 'orbitron' }}>
-                    Next<span className="text-blue-600">Step</span>
+                    Leet<span className="text-blue-600">Ai</span>
                 </div>
                
                 <div className="hidden lg:flex items-center justify-center space-x-1 flex-1">
@@ -211,7 +211,7 @@ export default function Navbar() {
                             {/* Top Section */}
                             <div>
                                 <SheetHeader>
-                                    <SheetTitle style={{ fontFamily: 'orbitron ' }}>Next<span className="text-blue-500">Step</span></SheetTitle>
+                                    <SheetTitle style={{ fontFamily: 'orbitron ' }}>Leet<span className="text-blue-500">Ai</span></SheetTitle>
                                 </SheetHeader>
 
                                 <div className="flex flex-col space-y-3 mt-6">
