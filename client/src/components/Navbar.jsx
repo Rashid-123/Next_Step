@@ -37,12 +37,12 @@ import { SiLighthouse } from "react-icons/si";
 
 export default function Navbar() {
     const { user, token, logout, loading } = useAuth();
-  
-    const [isOpen, setIsOpen] = useState(false);
-    const pathname = usePathname(); 
-    const router = useRouter(); 
 
-     console.log(user)
+    const [isOpen, setIsOpen] = useState(false);
+    const pathname = usePathname();
+    const router = useRouter();
+
+    console.log(user)
     // Function to get user initials for avatar
     const getUserInitials = () => {
         if (!user) return "";
@@ -62,26 +62,26 @@ export default function Navbar() {
         try {
             logout();
             setIsOpen(false);
-            router.push("/"); 
+            router.push("/");
         } catch (error) {
             console.error("Error logging out:", error);
         }
     }
 
-  
+
     const handleMobileNavigation = (path) => {
-        setIsOpen(false); 
-        router.push(path); 
+        setIsOpen(false);
+        router.push(path);
     };
 
     if (loading) {
         return (<div className="fixed top-0 left-0 right-0 z-50 p-4 border-b" style={{ backgroundColor: "#f0eee6", color: "#141413" }}>
             <div className="flex items-center justify-between animate-pulse">
-              
+
 
                 <div className="h-6 w-24 bg-gray-300 rounded"></div>
 
-            
+
                 <div className="hidden lg:flex items-center space-x-4">
                     {[...Array(6)].map((_, i) => (
                         <div key={i} className="h-8 w-20 bg-gray-300 rounded"></div>
@@ -94,16 +94,23 @@ export default function Navbar() {
         </div>
         );
     }
-    
+
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 p-5 bg-white border border-b-gray-200  " style={{ color: "#141413", }}>
             <div className="container mx-auto flex items-center justify-between">
                 {/* logo */}
-               
-                <div className="text-xl font-bold text-gray-900 tracking-wide" style={{ fontFamily: 'orbitron' }}>
+
+                {/* <div className="text-xl font-bold text-gray-900 tracking-wide" style={{ fontFamily: 'orbitron' }}>
                     Leet<span className="text-blue-600">Ai</span>
+                </div> */}
+
+                <div className="flex items-center space-x-2">
+                    <img src="/logo.png" alt="LeetAi Logo" className="h-8 w-8 object-contain" />
+                    <span className="text-xl font-bold text-gray-900 tracking-wide" style={{ fontFamily: 'orbitron' }}>
+                        Leet<span className="text-blue-600">Ai</span>
+                    </span>
                 </div>
-               
+
                 <div className="hidden lg:flex items-center justify-center space-x-1 flex-1">
                     <div className="flex items-center justify-center space-x-1">
                         <Button variant="ghost" asChild className={`text-sm font-medium transition-colors hover:bg-gray-100 ${isActive("/") ? "bg-slate-100  " : ""}`}>
@@ -137,7 +144,7 @@ export default function Navbar() {
 
                 {/* right side - profile or login + mobile menu */}
                 <div className="flex items-center space-x-4">
-                  
+
                     {!user ? (
 
                         <button className="px-2.5 py-0.5 md:px-3 md:py-1 bg-green-50 hover:bg-green-100 text-green-600 font-medium border border-green-200 rounded-md transition-all duration-200">
@@ -146,7 +153,7 @@ export default function Navbar() {
 
                     ) : (
                         <div className="flex items-center lg:space-x-5 space-x-1">
-                          
+
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button
@@ -211,7 +218,11 @@ export default function Navbar() {
                             {/* Top Section */}
                             <div>
                                 <SheetHeader>
-                                    <SheetTitle style={{ fontFamily: 'orbitron ' }}>Leet<span className="text-blue-500">Ai</span></SheetTitle>
+                                    {/* <SheetTitle style={{ fontFamily: 'orbitron ' }}>Leet<span className="text-blue-500">Ai</span></SheetTitle> */}
+                                    <SheetTitle className="flex items-center space-x-2" style={{ fontFamily: 'orbitron' }}>
+                                        <img src="/logo.png" alt="LeetAi Logo" className="h-7 w-7 object-contain" />
+                                        Leet<span className="text-blue-500">Ai</span>
+                                    </SheetTitle>
                                 </SheetHeader>
 
                                 <div className="flex flex-col space-y-3 mt-6">
