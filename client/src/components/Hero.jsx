@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowRight, CheckCircle, Zap, Crown, Gift } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 export default function Hero() {
 
     useEffect(() => {
@@ -11,6 +11,26 @@ export default function Hero() {
 
         return () => clearTimeout(timer);
     }, [])
+
+    const videoRef = useRef(null);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    videoRef.current?.play();
+                } else {
+                    videoRef.current?.pause(); // pause when out of view
+                }
+            },
+            { threshold: 0.7 }  // 50% of video must be visible to trigger
+        );
+
+        if (videoRef.current) observer.observe(videoRef.current);
+        return () => observer.disconnect();
+    }, []);
+
+
 
     return (
         <div>
@@ -25,19 +45,19 @@ export default function Hero() {
                     }}
                 />
 
-               
+
                 <div className="absolute top-10 right-10 h-40 w-40 rounded-full bg-blue-200 opacity-30 blur-3xl" />
                 <div className="absolute bottom-10 left-10 h-60 w-60 rounded-full bg-indigo-200 opacity-20 blur-3xl" />
 
                 <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-                
+
                     <div className="flex justify-center mb-6">
                         <div className="inline-flex items-center bg-blue-50 border border-blue-100 text-blue-600 px-4 py-2 rounded-full shadow-sm transition-all duration-300 hover:shadow-md">
                             <span className="font-medium text-xs sm:text-sm">Tired of not knowing what to solve next ?</span>
                         </div>
                     </div>
 
-                  
+
                     <h1 className="text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6 max-w-4xl mx-auto leading-tight">
                         Master Problem solving with <span className="text-blue-600">AI-Powered</span> Problem Recommendations
                     </h1>
@@ -48,13 +68,32 @@ export default function Hero() {
                     </p>
 
                     {/* Cta button  */}
-                    <div className="flex justify-center mb-12">
+                    <div className="flex justify-center mb-16">
                         <a
                             href="/login"
                             className="inline-flex items-center gap-2 px-4 py-2 md:px-6 md:py-3 bg-blue-500 text-white font-medium md:font-semibold   rounded-md shadow-lg hover:bg-blue-600 transform transition duration-300 hover:-translate-y-1 hover:shadow-xl"
                         >
                             Get Started Now <ArrowRight size={16} />
                         </a>
+                    </div>
+
+                    {/* Demo video  */}
+
+                    <div className="mb-16 md:mb-30 text-center">
+                        <h2 className="text-3xl font-bold text-gray-800 mb-2">See It In Action</h2>
+                        <p className="text-gray-600 mb-8">Watch how LeetAi personalizes your practice in under 2 minutes</p>
+                        <div className="max-w-4xl mx-auto">  
+                            <video
+                                ref={videoRef}
+                                className="w-full rounded-xl shadow-[0_0_30px_rgba(0,0,0,0.15)]"
+                                muted
+                                playsInline
+                                controls
+                                preload="metadata"
+                            >
+                                <source src="/video/demo.mp4" type="video/mp4" />
+                            </video>
+                        </div>
                     </div>
 
                     {/* "Why Choose Us" section with improved card design */}
@@ -132,11 +171,12 @@ export default function Hero() {
                                 Skip manual tag filtering — solve problems based on your actual progress, not what you already know. This keeps your learning challenging and more effective.
                             </p>
                         </div>
-
-
-
-
                     </div>
+
+
+
+
+                    {/* How it works  */}
                     <div className=" py-16 md:py-24">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="text-center mb-16">
