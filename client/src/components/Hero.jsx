@@ -80,8 +80,8 @@ export default function Hero() {
                     {/* Demo video  */}
 
                     <div className="mb-16 md:mb-30 text-center">
-                        <h2 className="text-3xl font-bold text-gray-800 mb-2">See It In Action</h2>
-                        <p className="text-gray-600 mb-8">Watch how LeetAi personalizes your practice in under 2 minutes</p>
+                        <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">See It In Action</h2>
+                        <p className="text-center text-sm sm:text-lg md:text-xl text-gray-700 mb-8 max-w-2xl mx-auto leading-relaxed">Watch how LeetAi personalizes your practice in under 2 minutes</p>
                         <div className="max-w-4xl mx-auto">  
                             <video
                                 ref={videoRef}
@@ -99,9 +99,6 @@ export default function Hero() {
                     {/* "Why Choose Us" section with improved card design */}
                     <div className="mb-4 text-center">
                         <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Why Choose <span className="text-xl md:text-2xl" style={{ fontFamily: 'orbitron' }}>Leet<span className="text-blue-600">Ai</span></span> ?</h2>
-                        {/* <h2 className="  text-3xl font-bold text-gray-800 sm:text-4xl mb-2">Why Choose NextStep?</h2> */}
-
-
 
                         <div className="h-1 w-20 bg-blue-500 mx-auto rounded-full mb-8"></div>
                     </div>
@@ -111,7 +108,7 @@ export default function Hero() {
                         <div className="bg-white rounded-xl p-6 border border-blue-100 shadow-xs hover:shadow-sm transition-all duration-300 group">
                             {/* Icon positioned on the left */}
                             <div className="flex justify-start mb-4">
-                                <div className="text-purple-500 bg-purple-100 p-2 rounded-md w-9 h-9 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 transition-colors duration-300">
+                                <div className="text-blue-500 bg-blue-100 p-2 rounded-md w-9 h-9 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 transition-colors duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                     </svg>
@@ -153,7 +150,7 @@ export default function Hero() {
                         <div className="bg-white rounded-xl p-6 border border-blue-100 shadow-xs hover:shadow-sm transition-all duration-300 group">
                             {/* Icon positioned on the left */}
                             <div className="flex justify-start mb-4">
-                                <div className="text-pink-400 bg-pink-100 p-2 rounded-md w-9 h-9 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 transition-colors duration-300">
+                                <div className="text-blue-500 bg-blue-100 p-2 rounded-md w-9 h-9 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 transition-colors duration-300">
 
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2l3.09 6.26L22 9l-5.91 5.64L17.82 22 12 18.27 6.18 22l1.73-7.36L2 9l6.91-.74L12 2z" />
