@@ -246,10 +246,10 @@ export default function Hero() {
                                         <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
                                         <span className="text-gray-700">50 AI Recommendations</span>
                                     </div>
-                                    <div className="flex items-center gap-2 text-sm">
+                                    {/* <div className="flex items-center gap-2 text-sm">
                                         <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
                                         <span className="text-gray-700">Basic Contextual Help</span>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
 
