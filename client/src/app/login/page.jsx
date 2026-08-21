@@ -135,7 +135,7 @@ export default function Login() {
                 <CardHeader className="space-y-1">
                     <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
                     <CardDescription className="text-center text-gray-500">
-                        Enter your credentials to access your account
+                        Access your account
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -162,7 +162,7 @@ export default function Login() {
                         </Alert>
                     )}
 
-                    <form onSubmit={handleLogin} className="space-y-4">
+                    {/* <form onSubmit={handleLogin} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="email" className="text-sm font-medium">
                                 Email
@@ -225,7 +225,7 @@ export default function Login() {
                         <div className="relative flex justify-center text-xs uppercase">
                             <span className="bg-white px-2 text-gray-500">Or continue with</span>
                         </div>
-                    </div>
+                    </div> */}
 
                     <Button
                         variant="outline"
